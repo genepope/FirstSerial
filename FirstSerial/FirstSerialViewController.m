@@ -82,7 +82,7 @@
     self.inputField.enabled = YES;
     self.sendButton.enabled = YES;
     self.eraseButton.enabled = YES;
-    self.emailButton.enabled = YES;
+    self.emailButton.enabled = [MFMailComposeViewController canSendMail];
 
     [self.rscMgr setBaud:2400];
     [self.rscMgr setDataSize:kDataSize8];
