@@ -105,16 +105,16 @@
 - (void)portStatusChanged {
     // do nothing
 /*
-    txDiscard,                      // non-zero if tx data msg from App discarded
-    rxOverrun,	                // non-zero if overrun error occurred
+    txDiscard,          // non-zero if tx data msg from App discarded
+    rxOverrun,	        // non-zero if overrun error occurred
     rxParity,			// non-zero if parity error occurred
     rxFrame,			// non-zero if frame error occurred
     txAck,				// ack when tx buffer becomes empty (sent only if txAxkSetting non-zero in config)
     msr,				// 0-3 current modem status bits for CTS, DSR, DCD & RI, 4-7 previous modem status bits, MODEM_STAT_
-    rtsDtrState,			// 0-3 current modem status bits for RTS & DTR, 4-7 previous modem status bits, MODEM_STAT_
+    rtsDtrState,        // 0-3 current modem status bits for RTS & DTR, 4-7 previous modem status bits, MODEM_STAT_
     rxFlowStat,			// rx flow control off= 0 on = RXFLOW_RTS/DTR/XOFF
     txFlowStat,			// rx flow control off= 0 on = TXFLOW_DCD/CTS/DSR/XOFF
-    returnResponse;			// Non-zero if returned in response to config or control
+    returnResponse;		// Non-zero if returned in response to config or control
     // message with returnStatus requested (non-zero). If non-zero the
     // value will equal the returnStatus byte.
 */
