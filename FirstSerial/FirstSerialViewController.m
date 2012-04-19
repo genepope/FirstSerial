@@ -173,7 +173,7 @@ int mDataSize = 0;
     self.outputLabel.text = outStr;
     
     if (stateFlag == ERASEFLAG) {
-        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr intValue] == SUCCESSFULERASERESULT) ? @"Successful" : @"Failed"];
+        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr intValue] == SUCCESSFULERASERESULT) ? @"Successful - DAU must be power-cycled for the erase to take effect" : @"Failed"];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Erase Command:" message:alertStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //      [alert release];           
