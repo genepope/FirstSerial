@@ -65,15 +65,48 @@ int mDataSize = 0;
          count to avoid hanging on an error...
          ================================*/
         waiting = mDataSize = 0;
-        self.inputField.text = @"00 00"; [self send];
+        self.inputField.text = @"00 00"; [self send];   // expected return in no data case:15 40 00 10
         while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 01"; [self send];
+        self.inputField.text = @"00 01"; [self send];   // expected:15 40 00 00
         while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"24 28"; [self send];   //date?
+        self.inputField.text = @"00 02"; [self send];   // expected:15 40 00 F8
         while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"24 29"; [self send];   //date?
+        self.inputField.text = @"00 03"; [self send];   // expected:15 40 00 00
         while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"24 2B"; [self send];   //time?
+        self.inputField.text = @"00 04"; [self send];   // expected:15 40 10 18
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 05"; [self send];   // expected:15 40 00 0F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        
+        self.inputField.text = @"00 06"; [self send];   // expected:15 40 10 78
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 07"; [self send];   // expected:15 40 00 0F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 08"; [self send];   // expected:15 40 2F F9
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 09"; [self send];   // expected:15 40 00 00
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 0A"; [self send];   // expected:15 40 00 00
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 0B"; [self send];   // expected:15 40 00 01
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        
+        self.inputField.text = @"00 0C"; [self send];   // expected:15 40 78 68
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 0D"; [self send];   // expected:15 40 0F 10
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 30"; [self send];   // expected:15 40 0F 0F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 31"; [self send];   // expected:15 40 0F 0F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 30"; [self send];   // expected:15 40 3F 3F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 31"; [self send];   // expected:15 40 3F 3F
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        
+        self.inputField.text = @"00 80"; [self send];   // expected:15 40 FF FF
+        while (mDataSize == waiting) {} waiting = mDataSize;
+        self.inputField.text = @"00 81"; [self send];   // expected:15 40 FF FF
         return;
     }
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
@@ -173,7 +206,7 @@ int mDataSize = 0;
     self.outputLabel.text = outStr;
     
     if (stateFlag == ERASEFLAG) {
-        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr intValue] == SUCCESSFULERASERESULT) ? @"Successful - DAU must be power-cycled for the erase to take effect" : @"Failed"];
+        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr intValue] == SUCCESSFULERASERESULT) ? @"Successful" : @"Failed"];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Erase Command:" message:alertStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //      [alert release];           
@@ -184,9 +217,8 @@ int mDataSize = 0;
         merrittData[mDataSize++][VAL] = [outStr intValue];
     }
     else {
-        //oops. ERROR!
+        stateFlag = NONEFLAG;
     }
-    stateFlag = NONEFLAG;
 }
 
 - (IBAction)eraseButton:(id)sender {
@@ -218,11 +250,13 @@ int mDataSize = 0;
     MFMailComposeViewController *dispatch = [[MFMailComposeViewController alloc] init];
     dispatch.mailComposeDelegate = self;
     
-    /*
-     [dispatch setToRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];
-     [dispatch setCcRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];
-     */
-    [dispatch setToRecipients:[NSArray arrayWithObject:@"larrywalton@yahoo.com"]];
+    if (1) {
+        [dispatch setToRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];
+        [dispatch setCcRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];        
+    } else {
+        [dispatch setToRecipients:[NSArray arrayWithObject:@"larrywalton@yahoo.com"]];      
+    }
+    
     [dispatch setSubject:@"data for meggitt"];
     
     NSMutableString *emailBody = [NSMutableString stringWithString: @""];
