@@ -2,18 +2,26 @@
 #import <MessageUI/MessageUI.h>
 #import "RscMgr+IO.h"
 
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#define DebugLog( s, ... ) NSLog( @"<%@:(%d)> %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#else
+#define DebugLog( s, ... )
+#endif
+
 #define CMD 0
 #define VAL 1
-#define SUCCESSFULERASERESULT 0x41
+#define SUCCESSFULERASERESULT @"00 00 00 41"
 #define AUTOLOADCHAR 0x2A   
 #define MARRAYSIZE 50
 
 #define NONEFLAG  0
 #define ERASEFLAG  1
-#define EMAILFLAG  2
-#define DOWNLOADFLAG 3
+#define AUTOLOADFLAG 2
 
 int stateFlag = NONEFLAG;
+int autoDownLoadStatus;
 int merrittData[MARRAYSIZE][2];   // [,0] = cmd val, [,1] = result val
 int mDataSize = 0;
 
@@ -54,9 +62,8 @@ int mDataSize = 0;
 #pragma mark - methods
 
 - (IBAction)send {
-    int i, int1, int2, int3, ival, waiting;
+    int i, int1, int2, int3, ival;
     
-    if (0) {
     if ([self.inputField.text characterAtIndex:0] == AUTOLOADCHAR) {
         /* =============================
          ------ recursive calls to automate a download -------
@@ -65,52 +72,79 @@ int mDataSize = 0;
          send til that happens.  probably oughta put in some kind of loop 
          count to avoid hanging on an error...
          ================================*/
-        waiting = mDataSize = 0;
-        self.inputField.text = @"00 00"; [self send];   // expected return in no data case:15 40 00 10
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 01"; [self send];   // expected:15 40 00 00
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 02"; [self send];   // expected:15 40 00 F8
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 03"; [self send];   // expected:15 40 00 00
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 04"; [self send];   // expected:15 40 10 18
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 05"; [self send];   // expected:15 40 00 0F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        
-        self.inputField.text = @"00 06"; [self send];   // expected:15 40 10 78
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 07"; [self send];   // expected:15 40 00 0F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 08"; [self send];   // expected:15 40 2F F9
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 09"; [self send];   // expected:15 40 00 00
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 0A"; [self send];   // expected:15 40 00 00
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 0B"; [self send];   // expected:15 40 00 01
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        
-        self.inputField.text = @"00 0C"; [self send];   // expected:15 40 78 68
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 0D"; [self send];   // expected:15 40 0F 10
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 30"; [self send];   // expected:15 40 0F 0F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 31"; [self send];   // expected:15 40 0F 0F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 30"; [self send];   // expected:15 40 3F 3F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 31"; [self send];   // expected:15 40 3F 3F
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        
-        self.inputField.text = @"00 80"; [self send];   // expected:15 40 FF FF
-        while (mDataSize == waiting) {} waiting = mDataSize;
-        self.inputField.text = @"00 81"; [self send];   // expected:15 40 FF FF
-        return;
+        autoDownLoadStatus = 1;
+        mDataSize = 0;
     }
+    if (!autoDownLoadStatus) {
+        switch (autoDownLoadStatus) {
+            case 1:
+                self.inputField.text = @"00 00";    // expected return in no data case:15 40 00 10
+                break;
+            case 2:
+                self.inputField.text = @"00 01";    // expected:15 40 00 00
+                break;
+            case 3:
+                self.inputField.text = @"00 02";    // expected:15 40 00 F8
+                break;
+            case 4:
+                self.inputField.text = @"00 03";    // expected:15 40 00 00
+                break;
+            case 5:
+                self.inputField.text = @"00 04";    // expected:15 40 10 18
+                break;
+
+            case 6:
+                self.inputField.text = @"00 05";    // expected:15 40 00 0F
+                break;
+            case 7:
+                self.inputField.text = @"00 06";    // expected:15 40 10 78
+              break;
+            case 8:
+                self.inputField.text = @"00 07";    // expected:15 40 00 0F
+              break;
+            case 9:
+                self.inputField.text = @"00 08";    // expected:15 40 2F F9
+               break;
+            case 10:
+                self.inputField.text = @"00 09";    // expected:15 40 00 00
+                break;
+ 
+            case 11:
+                self.inputField.text = @"00 0A";    // expected:15 40 00 00
+                break;
+            case 12:
+                self.inputField.text = @"00 0B";    // expected:15 40 00 01
+                break;
+            case 13:
+                self.inputField.text = @"00 0C";    // expected:15 40 78 68
+               break;
+            case 14:
+                self.inputField.text = @"00 0D";    // expected:15 40 0F 10
+               break;
+            case 15:
+                self.inputField.text = @"00 30";    // expected:15 40 0F 0F
+                break;
+ 
+            case 16:
+                self.inputField.text = @"00 31";    // expected:15 40 0F 0F
+               break;
+            case 17:
+                self.inputField.text = @"00 30";    // expected:15 40 3F 3F
+               break;
+            case 18:
+                self.inputField.text = @"00 80";    // expected:15 40 FF FF
+                break;
+            case 29:
+                self.inputField.text = @"00 81";    // expected:15 40 FF FF
+                break;
+
+            default:
+                autoDownLoadStatus = 0;
+                return;
+                break;
+        }        
     }
+
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     
     [outStr appendFormat:@"%C",(unichar)(0xAA)];
@@ -134,7 +168,6 @@ int mDataSize = 0;
     //    self.inputField.text = @"";
     
     merrittData[mDataSize][CMD] = ival;   // store cmd value in array
-    stateFlag = DOWNLOADFLAG;
 }
 
 #pragma mark - UITextFieldDelegate
@@ -197,37 +230,41 @@ int mDataSize = 0;
 }
 
 - (void)readBytesAvailable:(UInt32)length {
+    int dataInt;
     
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     NSString *dataStr = [self.rscMgr readString:length];
     
-    for (int i = 0; i < [dataStr length]; i++) {
+    for (int i = dataInt = 0; i < [dataStr length]; i++) {
         int int1 = (int)[dataStr characterAtIndex:i];
         [outStr appendFormat:@" %02X",int1];
+        dataInt = (dataInt << 8) + int1;
     }
     self.outputLabel.text = outStr;
     
     if (stateFlag == ERASEFLAG) {
-        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr intValue] == SUCCESSFULERASERESULT) ? @"Successful" : @"Failed"];
+        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr isEqualToString: SUCCESSFULERASERESULT]) ? @"Successful " : @"Failed"];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Erase Command:" message:alertStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //      [alert release];           
         
-        if ([outStr intValue] == SUCCESSFULERASERESULT) mDataSize = 0;
+        if ([outStr isEqualToString: SUCCESSFULERASERESULT]) mDataSize = 0;
+        stateFlag = NONEFLAG;
     }
-    else if (stateFlag == DOWNLOADFLAG) {
-        merrittData[mDataSize++][VAL] = [outStr intValue];
+    else if (autoDownLoadStatus) {
+        merrittData[autoDownLoadStatus++][VAL] = dataInt;
+        [self send];
     }
     else {
-        stateFlag = NONEFLAG;
+        //oops. ERROR!
     }
 }
 
 - (IBAction)eraseButton:(id)sender {
     int i, int1, int2;
     
-    NSMutableString *outStr = [NSMutableString stringWithString: @""];
     // erase command = AA 55 02 05 02
+    NSMutableString *outStr = [NSMutableString stringWithString: @""];
     [outStr appendFormat:@"%C",(unichar)(0xAA)];
     [outStr appendFormat:@"%C",(unichar)(0x55)];
     [outStr appendFormat:@"%C",(unichar)(0x02)];
@@ -249,28 +286,21 @@ int mDataSize = 0;
     
     if (![MFMailComposeViewController canSendMail]) return;
     
-    MFMailComposeViewController *dispatch = [[MFMailComposeViewController alloc] init];
-    dispatch.mailComposeDelegate = self;
+    MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+    picker.mailComposeDelegate = self;
     
-    if (1) {
-        [dispatch setToRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];
-        [dispatch setCcRecipients:[NSArray arrayWithObject:@"genepope@comcast.net"]];        
-    } else {
-        [dispatch setToRecipients:[NSArray arrayWithObject:@"larrywalton@yahoo.com"]];      
-    }
+    [picker setToRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"emailAddr"]]];
     
-    [dispatch setSubject:@"data for meggitt"];
+    [picker setSubject:[[NSUserDefaults standardUserDefaults] stringForKey:@"aircraftID"]];
     
     NSMutableString *emailBody = [NSMutableString stringWithString: @""];
     for (int i = 0; i < mDataSize; i++) {
-        //        [NSString stringWithFormat:@"%@/%@/%@", three, two, one];
         [emailBody appendFormat:@"%04X %04X \r\n",merrittData[i][CMD],merrittData[i][VAL]];
         
     }
-    [dispatch setMessageBody:emailBody isHTML:NO];
-    dispatch.navigationBar.barStyle = UIBarStyleBlack;
-    [self presentModalViewController:dispatch animated:YES];
-    stateFlag = EMAILFLAG;
+    [picker setMessageBody:emailBody isHTML:NO];
+    picker.navigationBar.barStyle = UIBarStyleBlack;
+    [self presentModalViewController:picker animated:YES];
 }
 
 // Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
@@ -301,5 +331,26 @@ int mDataSize = 0;
     //      [alert release];           
 	[self dismissModalViewControllerAnimated:YES];
 }
+
+/*
+ DebugLog(@"process Name: %@ Process ID: %d",@"yes!!",12);
+ 
+ NSLog(@"process Name: %@ Process ID: %d",string);
+ 
+ MFMailComposeViewController NSString* myNewString = [NSString stringWithFormat:@"%i", stateFlag];
+ UIAlertView *xalert = [[UIAlertView alloc] initWithTitle:@"000 Command:" message:myNewString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+ [xalert show];
+ 
+ [NSString stringWithFormat:@"%@/%@/%@", three, two, one];
+ 
+ UIAlertView *yalert = [[UIAlertView alloc] initWithTitle:@"111 Command:" message:outStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+ [yalert show];
+ NSString *out2Str;
+ out2Str = [outStr stringByReplacingOccurrencesOfString:@" "                                                     withString: @""];
+ 
+ UIAlertView *zalert = [[UIAlertView alloc] initWithTitle:@"333 Command:" message:out2Str delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+ [zalert show];
+ 
+ */
 
 @end
