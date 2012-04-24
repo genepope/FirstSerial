@@ -18,6 +18,7 @@
 		9F8DD30813DC81E5005EB4E8 /* RscMgr+IO.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F8DD30713DC81E5005EB4E8 /* RscMgr+IO.m */; };
 		9F8DD30A13DC8207005EB4E8 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F8DD30913DC8207005EB4E8 /* ExternalAccessory.framework */; };
 		B0CDD239153B7EDD00D94AEF /* libRscMgrUniv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0CDD238153B7EDD00D94AEF /* libRscMgrUniv.a */; };
+		B0F9F8B315474DC300D6428D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B0F9F8B215474DC300D6428D /* Settings.bundle */; };
 		D46BCD831532E5F900B75B1F /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D46BCD821532E5F900B75B1F /* MessageUI.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 		B0CDD234153B7EC200D94AEF /* redparkSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = redparkSerial.h; sourceTree = "<group>"; };
 		B0CDD235153B7EC200D94AEF /* RscMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RscMgr.h; sourceTree = "<group>"; };
 		B0CDD238153B7EDD00D94AEF /* libRscMgrUniv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libRscMgrUniv.a; sourceTree = "<group>"; };
+		B0F9F8B215474DC300D6428D /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		D46BCD821532E5F900B75B1F /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -64,6 +66,7 @@
 		9F8DD2D613DC81B9005EB4E8 = {
 			isa = PBXGroup;
 			children = (
+				B0F9F8B215474DC300D6428D /* Settings.bundle */,
 				9F8DD2EB13DC81B9005EB4E8 /* FirstSerial */,
 				9F8DD2E413DC81B9005EB4E8 /* Frameworks */,
 				9F8DD2E213DC81B9005EB4E8 /* Products */,
@@ -195,6 +198,7 @@
 			files = (
 				9F8DD2F013DC81B9005EB4E8 /* InfoPlist.strings in Resources */,
 				9F8DD2FC13DC81B9005EB4E8 /* FirstSerialViewController.xib in Resources */,
+				B0F9F8B315474DC300D6428D /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
