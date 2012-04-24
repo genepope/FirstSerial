@@ -22,11 +22,11 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>Text Field</string>
+			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
 			<string>Email CC:</string>
 			<key>Key</key>
-			<string>cc</string>
+			<string></string>
 		</dict>
 	</array>
 	<key>StringsTable</key>
