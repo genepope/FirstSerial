@@ -56,6 +56,7 @@ int mDataSize = 0;
 - (IBAction)send {
     int i, int1, int2, int3, ival, waiting;
     
+    if (0) {
     if ([self.inputField.text characterAtIndex:0] == AUTOLOADCHAR) {
         /* =============================
          ------ recursive calls to automate a download -------
@@ -108,6 +109,7 @@ int mDataSize = 0;
         while (mDataSize == waiting) {} waiting = mDataSize;
         self.inputField.text = @"00 81"; [self send];   // expected:15 40 FF FF
         return;
+    }
     }
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     
