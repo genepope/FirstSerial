@@ -12,7 +12,7 @@
 
 #define CMD 0
 #define VAL 1
-#define SUCCESSFULERASERESULT @"00 00 00 41"
+#define SUCCESSFULERASERESULT @"41"
 #define AUTOLOADCHAR 0x2A   
 #define MARRAYSIZE 50
 
@@ -190,7 +190,7 @@ int mDataSize = 0;
     self.inputField.enabled = YES;
     self.sendButton.enabled = YES;
     self.eraseButton.enabled = YES;
-    self.emailButton.enabled = [MFMailComposeViewController canSendMail];
+    self.emailButton.enabled = YES;
     
     [self.rscMgr setBaud:2400];
     [self.rscMgr setDataSize:kDataSize8];
@@ -253,6 +253,7 @@ int mDataSize = 0;
     }
     else if (autoDownLoadStatus) {
         merrittData[autoDownLoadStatus++][VAL] = dataInt;
+        mDataSize++;
         [self send];
     }
     else {
