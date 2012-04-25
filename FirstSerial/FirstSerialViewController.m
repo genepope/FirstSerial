@@ -73,7 +73,7 @@ int mDataSize = 0;
          count to avoid hanging on an error...
          ================================*/
         autoDownLoadStatus = 1;
-        mDataSize = 1;
+        mDataSize = 0;
     }
     if (autoDownLoadStatus) {
         switch (autoDownLoadStatus) {
@@ -121,21 +121,25 @@ int mDataSize = 0;
             case 14:
                 self.inputField.text = @"00 0D";    // expected:15 40 0F 10
                break;
+
             case 15:
-                self.inputField.text = @"00 30";    // expected:15 40 0F 0F
+                self.inputField.text = @"20 30";    // expected:15 40 0F 0F
                 break;
- 
             case 16:
-                self.inputField.text = @"00 31";    // expected:15 40 0F 0F
+                self.inputField.text = @"20 31";    // expected:15 40 0F 0F
                break;
+
             case 17:
-                self.inputField.text = @"00 30";    // expected:15 40 3F 3F
+                self.inputField.text = @"40 30";    // expected:15 40 3F 3F
                break;
             case 18:
-                self.inputField.text = @"00 80";    // expected:15 40 FF FF
+                self.inputField.text = @"40 31";    // expected:15 40 3F 3F
                 break;
-            case 29:
-                self.inputField.text = @"00 81";    // expected:15 40 FF FF
+            case 19:
+                self.inputField.text = @"40 80";    // expected:15 40 FF FF
+                break;
+            case 20:
+                self.inputField.text = @"40 81";    // expected:15 40 FF FF
                 break;
 
             default:
@@ -167,7 +171,7 @@ int mDataSize = 0;
     [self.rscMgr writeString:outStr];
     //    self.inputField.text = @"";
     
-    merrittData[autoDownLoadStatus][CMD] = ival;   // store cmd value in array  
+    merrittData[mDataSize][CMD] = ival;   // store cmd value in array
 }
 
 #pragma mark - UITextFieldDelegate
@@ -243,7 +247,7 @@ int mDataSize = 0;
     self.outputLabel.text = outStr;
     
     if (stateFlag == ERASEFLAG) {
-        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr isEqualToString: SUCCESSFULERASERESULT]) ? @"Successful " : @"Failed"];
+        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr isEqualToString: SUCCESSFULERASERESULT]) ? @"Successful " : [NSString stringWithFormat:@"%@/%@",@"Failed ",outStr]];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Erase Command:" message:alertStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //      [alert release];           
@@ -252,8 +256,8 @@ int mDataSize = 0;
         stateFlag = NONEFLAG;
     }
     else if (autoDownLoadStatus) {
-        merrittData[autoDownLoadStatus++][VAL] = dataInt;//store return result into array
-        mDataSize++;
+        merrittData[mDataSize++][VAL] = dataInt;//store return result into array
+        autoDownLoadStatus++;
         [self send];
     }
     else {
