@@ -26,7 +26,7 @@
 			<key>Title</key>
 			<string>Email CC:</string>
 			<key>Key</key>
-			<string></string>
+			<string>cc</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>
