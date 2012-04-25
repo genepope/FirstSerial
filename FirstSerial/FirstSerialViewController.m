@@ -73,9 +73,9 @@ int mDataSize = 0;
          count to avoid hanging on an error...
          ================================*/
         autoDownLoadStatus = 1;
-        mDataSize = 0;
+        mDataSize = 1;
     }
-    if (!autoDownLoadStatus) {
+    if (autoDownLoadStatus) {
         switch (autoDownLoadStatus) {
             case 1:
                 self.inputField.text = @"00 00";    // expected return in no data case:15 40 00 10
@@ -167,7 +167,7 @@ int mDataSize = 0;
     [self.rscMgr writeString:outStr];
     //    self.inputField.text = @"";
     
-    merrittData[mDataSize][CMD] = ival;   // store cmd value in array
+    merrittData[autoDownLoadStatus][CMD] = ival;   // store cmd value in array  
 }
 
 #pragma mark - UITextFieldDelegate
@@ -190,7 +190,7 @@ int mDataSize = 0;
     self.inputField.enabled = YES;
     self.sendButton.enabled = YES;
     self.eraseButton.enabled = YES;
-    self.emailButton.enabled = YES;
+    self.emailButton.enabled = [MFMailComposeViewController canSendMail];
     
     [self.rscMgr setBaud:2400];
     [self.rscMgr setDataSize:kDataSize8];
@@ -213,16 +213,16 @@ int mDataSize = 0;
 - (void)portStatusChanged {
     // do nothing
     /*
-     txDiscard,          // non-zero if tx data msg from App discarded
+     txDiscard,         // non-zero if tx data msg from App discarded
      rxOverrun,	        // non-zero if overrun error occurred
      rxParity,			// non-zero if parity error occurred
      rxFrame,			// non-zero if frame error occurred
      txAck,				// ack when tx buffer becomes empty (sent only if txAxkSetting non-zero in config)
      msr,				// 0-3 current modem status bits for CTS, DSR, DCD & RI, 4-7 previous modem status bits, MODEM_STAT_
-     rtsDtrState,        // 0-3 current modem status bits for RTS & DTR, 4-7 previous modem status bits, MODEM_STAT_
-     rxFlowStat,			// rx flow control off= 0 on = RXFLOW_RTS/DTR/XOFF
-     txFlowStat,			// rx flow control off= 0 on = TXFLOW_DCD/CTS/DSR/XOFF
-     returnResponse;		// Non-zero if returned in response to config or control
+     rtsDtrState,       // 0-3 current modem status bits for RTS & DTR, 4-7 previous modem status bits, MODEM_STAT_
+     rxFlowStat,		// rx flow control off= 0 on = RXFLOW_RTS/DTR/XOFF
+     txFlowStat,		// rx flow control off= 0 on = TXFLOW_DCD/CTS/DSR/XOFF
+     returnResponse;	// Non-zero if returned in response to config or control
      // message with returnStatus requested (non-zero). If non-zero the
      // value will equal the returnStatus byte.
      */
@@ -252,7 +252,7 @@ int mDataSize = 0;
         stateFlag = NONEFLAG;
     }
     else if (autoDownLoadStatus) {
-        merrittData[autoDownLoadStatus++][VAL] = dataInt;
+        merrittData[autoDownLoadStatus++][VAL] = dataInt;//store return result into array
         mDataSize++;
         [self send];
     }
