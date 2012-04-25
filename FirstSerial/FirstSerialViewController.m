@@ -289,10 +289,10 @@ int mDataSize = 0;
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
     picker.mailComposeDelegate = self;
     
-    [picker setToRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"Email To:"]]];
-    [picker setCcRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"Email CC:"]]];
+    [picker setToRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"to"]]];
+    [picker setCcRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"cc"]]];
   
-    [picker setSubject:[[NSUserDefaults standardUserDefaults] stringForKey:@"Tail Number"]];
+    [picker setSubject:[[NSUserDefaults standardUserDefaults] stringForKey:@"tail"]];
     
     NSMutableString *emailBody = [NSMutableString stringWithString: @""];
     for (int i = 0; i < mDataSize; i++) {
