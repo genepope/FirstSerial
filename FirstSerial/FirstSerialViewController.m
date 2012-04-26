@@ -33,6 +33,42 @@ int mDataSize = 0;
 
 #pragma mark - View lifecycle
 
+/*
+ - (void)registerDefaultsFromSettingsBundle {
+ NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+ if(!settingsBundle) {
+ NSLog(@"Could not find Settings.bundle");
+ return;
+ }
+ 
+ NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+ NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+ 
+ NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+ for(NSDictionary *prefSpecification in preferences) {
+ NSString *key = [prefSpecification objectForKey:@"Key"];
+ if(key) {
+ [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
+ }
+ }
+ [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+ //    [defaultsToRegister release];
+ }
+ 
+ - (void)applicationDidFinishLaunching:(UIApplication *)application {
+ // Get the application user default values
+ NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+ NSString *server = [user stringForKey:@"server_address"];
+ if(!server) {
+ // If the default value doesn't exist then we need to manually set them.
+ [self registerDefaultsFromSettingsBundle];
+ server = [[NSUserDefaults standardUserDefaults] stringForKey:@"server_address"];
+ }
+ //    [window addSubview:viewController.view];
+ //    [window makeKeyAndVisible];
+ }
+ */
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -65,13 +101,6 @@ int mDataSize = 0;
     int i, int1, int2, int3, ival;
     
     if ([self.inputField.text characterAtIndex:0] == AUTOLOADCHAR) {
-        /* =============================
-         ------ recursive calls to automate a download -------
-         also, poorman's handshaking.  when readBytesAvailable receives data
-         it will increment mDataSize.  so we'll just hang out after each
-         send til that happens.  probably oughta put in some kind of loop 
-         count to avoid hanging on an error...
-         ================================*/
         autoDownLoadStatus = 1;
         mDataSize = 0;
     }
@@ -289,14 +318,21 @@ int mDataSize = 0;
 
 - (IBAction)emailButton:(id)sender {
     
+	NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+	if (![user stringForKey:@"to"] || ![user stringForKey:@"cc"] || ![user stringForKey:@"tail"]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Email Command:" message:@"App Preferences must first be set up in iPhone Settings!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+
     if (![MFMailComposeViewController canSendMail]) return;
     
     MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
     picker.mailComposeDelegate = self;
     
+    // these picker calls will crash if the values looked up are NIL.
     [picker setToRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"to"]]];
     [picker setCcRecipients:[NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"cc"]]];
-  
     [picker setSubject:[[NSUserDefaults standardUserDefaults] stringForKey:@"tail"]];
     
     NSMutableString *emailBody = [NSMutableString stringWithString: @""];

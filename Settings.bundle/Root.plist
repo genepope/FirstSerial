@@ -7,6 +7,8 @@
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>DefaultValue</key>
+			<string>N1MM</string>
 			<key>Title</key>
 			<string>Tail Number:</string>
 			<key>Key</key>
@@ -15,6 +17,8 @@
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>DefaultValue</key>
+			<string>dataProvider@email.com</string>
 			<key>Title</key>
 			<string>Email To:</string>
 			<key>Key</key>
@@ -25,6 +29,8 @@
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
 			<string>Email CC:</string>
+			<key>DefaultValue</key>
+			<string>your@email.com</string>
 			<key>Key</key>
 			<string>cc</string>
 		</dict>
