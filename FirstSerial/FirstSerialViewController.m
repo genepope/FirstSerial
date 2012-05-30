@@ -72,6 +72,10 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
 - (IBAction)send {
     int i, int1, int2, int3, ival;
     
+    DebugLog(@"enter send. Point 1");
+    
+    if ([self.inputField.text length] != 0) { //Only do something if we have string input (for now)
+        
     if ([self.inputField.text characterAtIndex:0] == AUTOLOADCHAR) {
         /*  BASIC DESCRIPTION OF HOW TO DOWNLOAD DATA FROM THE MERRIDIAN'S SERIAL PORT:   
          first, 18 locs are read in, the "header" locs.  starting at 00 00 thru 00 0D, then 2030/31 and 2080/81.  always the same result, except for 2030/31 and 2080/81.  the 1st result (from 00 00) has to be 0x10 or it forces an error.  all the other results of the first 14 commands don't matter - they're ignored, unless there's no return at all, which causes an err.  each ectm record is 20 locs.  it can either come from block 1 or block 2.  if 2030/31 returns 3F3F3F3F then block 1 is used starting at 0x2000/0x2400.  otherwise block 2 is used starting at 0x4000/0x4400. 
@@ -112,6 +116,9 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
         [merrittStr setString: @""];
         mDataSize = 0;
     }
+ 
+    DebugLog(@"send. Point 2");
+
     if (autoDownLoadStatus) {
         //first, do the 14 loc header
         [formattedStr setString: blockStr];
@@ -133,6 +140,8 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
         self.inputField.text = formattedStr;
     }
     
+    DebugLog(@"send. Point 3");
+
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     
     [outStr appendFormat:@"%C",(unichar)(0xAA)];
@@ -152,10 +161,22 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
         ival = (ival << 8)+ int3;
         [outStr appendFormat:@"%C",(unichar)int3];
     }
+
+    DebugLog(@"send. Point 4");
+
     [self.rscMgr writeString:outStr];
     // self.inputField.text = @"";
     
     merrittData[mDataSize][CMD] = ival; // store cmd value in array
+    }
+    else 
+    {        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Enter something like * or commands" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        
+        [alert show];
+        // [alert release];
+        //        [alertStr appendString: @"Enter something like * or commands"];
+    }
 }
 
 #pragma mark - UITextFieldDelegate
@@ -222,26 +243,40 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
     
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     NSString *dataStr = [self.rscMgr readString:length];
+         
+    DebugLog(@"enter readBytesAvailable. Point 1");
     
-    for (int i = dataInt = 0; i < [dataStr length]; i++) {
+   for (int i = dataInt = 0; i < [dataStr length]; i++) {
         int int1 = (int)[dataStr characterAtIndex:i];
         [outStr appendFormat:@" %02X",int1];
         dataInt = (dataInt << 8) + int1;
     }
+
+    DebugLog(@"readBytesAvailable. Point 2");
+
     self.outputLabel.text = outStr;
     
     if (stateFlag == ERASEFLAG) {
-        NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr isEqualToString: SUCCESSFULERASERESULT]) ? @"Successful " : [NSString stringWithFormat:@"%@/%@",@"Failed ",outStr]];
+        
+        DebugLog(@"readBytesAvailable ERASEFLAG. Point 3a");
+        
+       NSMutableString *alertStr = [NSMutableString stringWithString: ([outStr isEqualToString: SUCCESSFULERASERESULT]) ? @"Successful " : [NSString stringWithFormat:@"%@/%@",@"Failed ",outStr]];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Erase Command:" message:alertStr delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         // [alert release];
         
         if ([outStr isEqualToString: SUCCESSFULERASERESULT]) mDataSize = 0;
         stateFlag = NONEFLAG;
-    }
-    else if (autoDownLoadStatus) {
-        [excelStr appendFormat:@"%3d, 0x%4X, 0x%4X, %6d, %6d\r\n",autoDownLoadStatus, merrittData[mDataSize][CMD], dataInt, merrittData[mDataSize][CMD], dataInt];
+ 
+        DebugLog(@"readBytesAvailable ERASEFLAG. Point 3b");
         
+}
+    else if (autoDownLoadStatus) {
+                
+        DebugLog(@"readBytesAvailable. Point 4");
+        
+      [excelStr appendFormat:@"%3d, 0x%4X, 0x%4X, %6d, %6d\r\n",autoDownLoadStatus, merrittData[mDataSize][CMD], dataInt, merrittData[mDataSize][CMD], dataInt];
+                
         if (autoDownLoadStatus == 1) {
             if (dataInt != 0x10) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Comm Failed:" message:[NSString stringWithFormat:@"%@ %3d 0x%4X",@"Error 1:",autoDownLoadStatus,dataInt] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -251,6 +286,7 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
                 return;
             }
         }
+ 
         if (autoDownLoadStatus == 14) {
             [blockStr setString: @"20 "];
         } else if (autoDownLoadStatus == 16) {
@@ -309,7 +345,10 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
             mDataSize = 0;
             recordNum--;
         }
-        merrittData[mDataSize++][VAL] = dataInt;//store return result into array
+ 
+        DebugLog(@"readBytesAvailable. Point 5");
+        
+       merrittData[mDataSize++][VAL] = dataInt;//store return result into array
         if (recordNum) {
             autoDownLoadStatus++;
             [self send];
@@ -321,6 +360,9 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
     int i, int1, int2;
     
     // erase command = AA 55 02 05 02
+
+    DebugLog(@"enter eraseButton. Point 1");
+
     NSMutableString *outStr = [NSMutableString stringWithString: @""];
     [outStr appendFormat:@"%C",(unichar)(0xAA)];
     [outStr appendFormat:@"%C",(unichar)(0x55)];
@@ -337,6 +379,9 @@ NSMutableString *formattedStr, *blockStr, *excelStr, *merrittStr;
     [self.rscMgr writeString:outStr];
     // check return value. should be 0x41. Alert for other values.
     stateFlag = ERASEFLAG;
+
+    DebugLog(@"exit eraseButton. Point 2");
+    
 }
 
 - (IBAction)emailButton:(id)sender {
